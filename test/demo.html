@@ -1,0 +1,501 @@
+<!-- https://google-developers.appspot.com/maps/documentation/javascript/examples/full/places-autocomplete-hotelsearch -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Place Autocomplete Hotel Search</title>
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        z-index: 0; /* Set z-index to 0 as it will be on a layer below the contact form */
+        position:absolute;
+        float:left;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+      }
+      .controls {
+        float:left;
+        margin: 0;
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+      #autocomplete {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin: 0;
+        padding: 0;
+        text-overflow: ellipsis;
+        width: 200px;
+        height: 30px;
+      }
+      #country {
+        background-color: #4d90fe;
+        color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin: 0;
+        padding: 0;
+        height: 32px;
+      }
+  	  #listing {
+	    z-index: 1; /* The z-index should be higher than Google Maps */
+  	    //position: relative;
+	    float:right;
+	    height: 90%;
+	    width: 300px;
+	    top: 0;
+	    margin: 0;
+	    padding: 5px;
+	    //background: black;
+	    //opacity: .45; /* Set the opacity for a slightly transparent Google Form */
+	    //opacity: .80;
+	    //color: white;
+	    //border: 1px solid #999;
+	    border: none;
+	    //visibility: hidden;
+        overflow-x: hidden;
+	    overflow-y: scroll;
+	  }
+      table {
+        //color: black;
+        font-size: 12px;
+      }
+      #resultsTable {
+        border-collapse: collapse;
+        width: 100%;
+	    float:left;
+	    margin: 0;
+	    padding: 0;
+      }
+      .placeIcon {
+        width: 20px;
+        height: 34px;
+        margin: 2px;
+      }
+  	  #info-content {
+	    z-index: 1; /* The z-index should be higher than Google Maps */
+	    visibility: hidden;
+	  }
+    </style>
+
+    <style>
+      .hotelIcon {
+        width: 24px;
+        height: 24px;
+      }
+      #rating {
+        font-size: 13px;
+        font-family: Arial Unicode MS;
+      }
+      .iw_table_row {
+        height: 18px;
+      }
+      .iw_attribute_name {
+        font-weight: bold;
+        text-align: right;
+      }
+      .iw_table_icon {
+        text-align: right;
+      }
+    </style>
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+    <script>
+// This example uses the autocomplete feature of the Google Places API.
+// It allows the user to find all hotels in a given place, within a given
+// country. It then displays markers for all the hotels returned,
+// with on-click details for each hotel.
+
+var map, circle, places, infoWindow;
+var markers = [];
+var autocomplete;
+var countryRestrict = { 'country': 'us' };
+var MARKER_PATH = 'https://maps.gstatic.com/intl/en_us/mapfiles/marker_green';
+var hostnameRegexp = new RegExp('^https?://.+?/');
+
+var countries = {
+  'in': {
+    center: new google.maps.LatLng(19.5, 81.8),
+    zoom: 6
+  },
+  'us': {
+    center: new google.maps.LatLng(37.1, -95.7),
+    zoom: 5
+  },
+  'uk': {
+    center: new google.maps.LatLng(54.8, -4.6),
+    zoom: 6
+  }
+};
+
+function initialize() {
+
+  var mapOptions = {
+    center: countries['us'].center,
+    zoom: countries['us'].zoom,
+    mapTypeId: google.maps.MapTypeId.TERRAIN,
+    disableDefaultUI: true
+  };
+  map = new google.maps.Map(
+  				document.getElementById('map-canvas'),
+  			    mapOptions);
+
+  var locCtrl = document.getElementById('loc-control');
+  var ctrySel = document.getElementById('ctry-sel');
+
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(locCtrl);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(ctrySel);
+
+  var listing = document.getElementById('listing');
+  map.controls[google.maps.ControlPosition.RIGHT_TOP].push(listing);
+
+  var circleOptions = {
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillOpacity: 0.35,
+      map: map,
+      center: countries['us'].center,
+      radius: 10000,
+      editable: true,
+      clickable: false,
+      draggable: true,
+      visible: false
+    };
+  circle = new google.maps.Circle(circleOptions);
+
+  google.maps.event.addListener(circle, 'radius_changed', showNewCircle);
+  google.maps.event.addListener(circle, 'center_changed', showNewCircle);
+
+
+  infoWindow = new google.maps.InfoWindow();
+  //infoWindow = new google.maps.InfoWindow({
+  //    content: document.getElementById('info-content')
+  //  });
+
+  // Create the autocomplete object and associate it with the UI input control.
+  // Restrict the search to the default country, and to place type "cities".
+  autocomplete = new google.maps.places.Autocomplete(
+	  /** @type {HTMLInputElement} */ (document.getElementById('autocomplete')),
+      {
+        types: ['(cities)'],
+        componentRestrictions: countryRestrict
+      });
+
+  places = new google.maps.places.PlacesService(map);
+
+  google.maps.event.addListener(autocomplete, 'place_changed', onPlaceChanged);
+
+  // Add a DOM event listener to react when the user selects a country.
+  google.maps.event.addDomListener(document.getElementById('country'), 'change', setAutocompleteCountry);
+
+}
+
+// When the user selects a city, get the place details for the city and
+// zoom the map in on the city.
+function onPlaceChanged() {
+  // Note: circle change invokes showNewCircle event!
+  var place = autocomplete.getPlace();
+  if (place.geometry) {
+    map.panTo(place.geometry.location);
+    map.setZoom(12);
+    google.maps.event.clearListeners(circle, 'radius_changed');
+    circle.setRadius(10000);
+    google.maps.event.addListener(circle, 'radius_changed', showNewCircle);
+    circle.setCenter(place.geometry.location);
+    circle.setVisible(true);
+  } else {
+    document.getElementById('autocomplete').value = '';
+  }
+}
+
+function showNewCircle(event) {
+  clearResults();
+  clearMarkers();
+  clearControls();
+
+  var rad = circle.getRadius() / 1000; // KM
+  //var rad = circle.getRadius();
+  var cen = circle.getCenter();
+
+  var cirInfo = '<b>Circle: </b><br>' +
+  'center : ' + cen.lat() + ', ' + cen.lng() + '<br>' +
+  'radius : ' + rad;
+  //alert(cirInfo);
+
+  search(cen, rad);
+}
+
+function searchResults(results) {
+    //alert("In searchResults");
+    //document.getElementById('listing').style.visibility = 'visible';
+    // Create a marker for each company found, and
+    // assign a letter of the alphabetic to each marker icon.
+    for (var i = 0; i < results.length; i++) {
+      var iLetter = i % 26;
+      var markerLetter = String.fromCharCode('A'.charCodeAt(0) + iLetter);
+      var markerIcon = MARKER_PATH + markerLetter + '.png';
+      // Use marker animation to drop the icons incrementally on the map.
+      markers[i] = new google.maps.Marker({
+        position: new google.maps.LatLng(results[i].latitude, results[i].longitude),
+        animation: google.maps.Animation.DROP,
+        icon: markerIcon
+      });
+      // Add custom-data
+      markers[i].customResultData = results[i];
+      google.maps.event.addListener(markers[i], 'click', showInfoWindow);
+      setTimeout(dropMarker(i), i * 100);
+      addResult(results[i], i);
+    }
+}
+
+// Get the browser specific XmlHttpRequest
+function createXHRObject() {
+    if (window.ActiveXObject) { // IE
+       return new ActiveXObject("Microsoft.XMLHTTP");
+    }  else if (window.XMLHttpRequest) {
+       return new XMLHttpRequest();
+    }
+}
+
+function search(center, radius) {
+    var xmlHttp = createXHRObject();
+
+    //var searchJson = '{ "latitude" : "' + center.lat() + '", "longitude" : "' + center.lng() + '", "search_radius" : "20", "industries" : [ "airlines", "banking" ], "num_employees" : "201-500", "ownership" : "funded" }';
+    var searchJson = '{ "latitude" : "' + center.lat().toFixed(8) + '", "longitude" : "' + center.lng().toFixed(8) + '", "search_radius" : "' + radius + '" } ';
+    //alert(searchJson);
+    //alert(searchJson.length);
+
+    //var searchUrl = "http://peeqmaps.com/app/open/co_maps/neigh.json";
+    //var searchUrl = "http://peeqmaps.com/app/open/co_maps/neigh.json";
+	var searchUrl = "/app/open/co_maps/neigh.json";
+
+	xmlHttp.onreadystatechange = function() {
+	    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+	        var myArr = JSON.parse(xmlHttp.responseText);
+            //alert(myArr);
+	        searchResults(myArr.companies);
+	    } else if (xmlHttp.status == 400) {
+            // 400 indicates file not found
+            alert('Page not found');
+        }
+	}
+	xmlHttp.open("POST", searchUrl, true);
+
+    // send the header information along with the request
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    //xmlHttp.setRequestHeader("Content-Length", searchJson.length);
+    //xmlHttp.setRequestHeader("Connection", "close");
+    //xmlHttp.setRequestHeader("Connection", "keep-alive");
+    xmlHttp.setRequestHeader("Cache-Control", "no-cache");
+
+	xmlHttp.send(searchJson);
+}
+
+function search_DEBUG(center, radius) {
+	var myArr = [];
+	searchResults(myArr);
+}
+
+function clearMarkers() {
+  infoWindow.close();
+
+  for (var i = 0; i < markers.length; i++) {
+    if (markers[i]) {
+      markers[i].setMap(null);
+    }
+  }
+  markers = [];
+}
+
+function clearControls() {
+  document.getElementById('autocomplete').value = '';
+  //document.getElementById('autocomplete').placeholder = 'Enter a city';
+}
+
+// [START region_setcountry]
+// Set the country restriction based on user input.
+// Also center and zoom the map on the given country.
+function setAutocompleteCountry() {
+  var country = document.getElementById('country').value;
+  if (country == 'all') {
+    autocomplete.setComponentRestrictions([]);
+    map.setCenter(new google.maps.LatLng(15, 0));
+    map.setZoom(2);
+  } else {
+    autocomplete.setComponentRestrictions({ 'country': country });
+    map.setCenter(countries[country].center);
+    map.setZoom(countries[country].zoom);
+  }
+  clearResults();
+  clearMarkers();
+  clearControls();
+  circle.setVisible(false);
+  //document.getElementById('listing').style.visibility = 'hidden';
+}
+// [END region_setcountry]
+
+function dropMarker(i) {
+  return function() {
+    markers[i].setMap(map);
+  };
+}
+
+function addResult(result, i) {
+  var iLetter = i % 26;
+  var results = document.getElementById('results');
+  var markerLetter = String.fromCharCode('A'.charCodeAt(0) + iLetter);
+  var markerIcon = MARKER_PATH + markerLetter + '.png';
+
+  var tr = document.createElement('tr');
+  tr.style.backgroundColor = (i % 2 == 0 ? '#F0F0F0' : '#FFFFFF');
+  tr.onclick = function() {
+    google.maps.event.trigger(markers[i], 'click');
+  };
+
+  var iconTd = document.createElement('td');
+  var nameTd = document.createElement('td');
+  var icon = document.createElement('img');
+  icon.src = markerIcon;
+  icon.setAttribute('class', 'placeIcon');
+  icon.setAttribute('className', 'placeIcon');
+  var name = document.createTextNode('[' + (i+1) + '] ' +result.name);
+  iconTd.appendChild(icon);
+  nameTd.appendChild(name);
+  tr.appendChild(iconTd);
+  tr.appendChild(nameTd);
+  results.appendChild(tr);
+}
+
+function clearResults() {
+  var results = document.getElementById('results');
+  while (results.childNodes[0]) {
+    results.removeChild(results.childNodes[0]);
+  }
+}
+
+function showInfoWindow_SIMPLE() {
+	  var marker = this;
+
+	  infoWindow.close();
+	  infoWindow.setContent(marker.customResultData.name);
+	  infoWindow.open(map, marker);
+}
+
+function showInfoWindow() {
+   var marker = this;
+
+   infoWindow.close();
+   var content = document.getElementById('info-content');
+   infoWindow.setContent(content.innerHTML);
+   content.style.visibility = 'visible';
+   infoWindow.open(map, marker);
+   buildIWContent(marker.customResultData);
+}
+
+// Load the place information into the HTML elements used by the info window.
+function buildIWContent(contentData) {
+    document.getElementById('iw-name').innerHTML = contentData.name;
+    document.getElementById('iw-website').innerHTML = '<b><a href="' + contentData.homepage_url + '">' + contentData.homepage_url + '</a></b>';
+    document.getElementById('iw-address').innerHTML = contentData.full_addr;
+    document.getElementById('iw-sof-url').innerHTML = '<b><a href="' + contentData.stackoverflow_url + '">'
+                                                                           + contentData.stackoverflow_url + '</a></b>';
+    document.getElementById('iw-fb-url').innerHTML = '<b><a href="' + contentData.facebook_url + '">' + contentData.facebook_url + '</a></b>';
+    document.getElementById('iw-industry').innerHTML = contentData.industry;
+    document.getElementById('iw-size').innerHTML = contentData.num_employees;
+    document.getElementById('iw-funding').innerHTML = contentData.ownership;
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+
+
+  </head>
+
+  <body>
+
+	<div id="loc-control" class="controls">
+		  <input id="autocomplete" placeholder="Enter a city" type="text" />
+	</div>
+	<div id="ctry-sel" class="controls">
+		  <select id="country">
+			<option value="all">All</option>
+			<option value="in">India</option>
+			<option value="us" selected>U.S.A.</option>
+			<option value="uk">United Kingdom</option>
+		  </select>
+	</div>
+
+    <div id="map-canvas"></div>
+
+    <div id="listing">
+      <table id="resultsTable">
+        <tbody id="results"></tbody>
+      </table>
+    </div>
+
+    <div id="info-content">
+      <table>
+        <tr id="iw-rating-row" class="iw_table_row">
+          <td class="iw_attribute_name">Name:</td>
+          <td id="iw-name"></td>
+        </tr>
+<!--
+        <tr id="iw-url-row" class="iw_table_row">
+          <td id="iw-icon" class="iw_table_icon"></td>
+          <td id="iw-url"></td>
+        </tr>
+-->
+        <tr id="iw-website-row" class="iw_table_row">
+          <td class="iw_attribute_name">Homepage:</td>
+          <td id="iw-website"></td>
+        </tr>
+        <tr id="iw-address-row" class="iw_table_row">
+          <td class="iw_attribute_name">Address:</td>
+          <td id="iw-address"></td>
+        </tr>
+        <tr id="iw-website-row" class="iw_table_row">
+          <td class="iw_attribute_name">SOF:</td>
+          <td id="iw-sof-url"></td>
+        </tr>
+        <tr id="iw-website-row" class="iw_table_row">
+          <td class="iw_attribute_name">Facebook:</td>
+          <td id="iw-fb-url"></td>
+        </tr>
+        <tr id="iw-website-row" class="iw_table_row">
+          <td class="iw_attribute_name">Industry:</td>
+          <td id="iw-industry"></td>
+        </tr>
+        <tr id="iw-website-row" class="iw_table_row">
+          <td class="iw_attribute_name">Size:</td>
+          <td id="iw-size"></td>
+        </tr>
+        <tr id="iw-website-row" class="iw_table_row">
+          <td class="iw_attribute_name">Funding:</td>
+          <td id="iw-funding"></td>
+        </tr>
+      </table>
+    </div>
+
+  </body>
+
+</html>

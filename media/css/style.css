@@ -1,0 +1,678 @@
+html, body {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+		font-family:"Gotham Rounded Medium", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+      }
+#mapCanvas{
+  height: 100%;
+/*  margin-left: 17%; */
+}
+.container-fluid , .row{
+height:100%;
+}
+#home_address_modal .modal-dialog{
+    width: 200px;
+    margin: 0;
+    z-index: 99;
+    left: 64%;
+    top: 25px;
+}
+#infowindow .modal-dialog{
+    width: 300px;
+    margin: 0;
+    z-index: 99;
+    left: 80%;
+    bottom: 350px;
+}
+ #locationFinder{
+  position: absolute;
+  z-index: 2000;
+  width: 40%;
+  left: 0;
+  margin: 1%;
+  }
+ #searchContainer{
+  position: absolute;
+  bottom: 37%;
+	z-index: 3;
+}
+.autofill-tag{
+  display:inline!important;
+  cursor:pointer;
+}
+#empty_search_Res_popup h3{
+  font-size: 17px;
+  padding-left: 22%;
+}
+#empty_search_Res_popup{
+    position: absolute;
+  z-index: 8;
+  background-color: rgba(255, 255, 255, 0.77);
+  width: 21%;
+  height: 10%;
+  margin-left: 40%;
+  margin-top: 160px;
+  border: 2px solid #34a2ce;
+  display:none;
+  }
+#mailForm{
+  padding-bottom: 3%;
+  }
+.mailFormInput{
+margin-top: -2%;
+}
+.btn:hover, .btn:focus
+{
+color:white !important;
+}
+#tagSearch_btn, #tagclear_btn{
+  margin-top: 4%;
+  width: 30%;
+  padding: 0 !important;
+  color: white;
+  background: #56c0f1;
+  border: 1px solid #56c0f1;
+  border-radius: 0 2px 2px 0;
+  margin-left: -1%;
+  }
+
+
+ .searchPart{
+ display:none;
+   margin-top: 0%;
+   padding: 0 !important;
+}
+  #searchDistance p{
+      text-align: start;
+
+  }
+  #searchDistance{
+   position: absolute;
+  z-index: 3;
+  right: 0;
+  margin-top: 5%;
+/*  width: 20%;
+  padding: 1%;
+  padding-left: 7%;*/
+  text-align: center;
+  color: rgb(49, 49, 226);
+
+
+  }
+
+  .fa{
+
+    font-size: 25px !important;
+    padding-left: 10px !important;
+	}
+
+
+ #distance{
+  padding: 0px;
+  height: 33px !important;
+	}
+
+
+#searchCompany, #searchLocation {
+  width: 100%;
+  }
+.tabs{
+  background-color: white;
+  width: 100%;}
+#firstTab #markericon {
+  position: absolute;
+  z-index: 5;
+  margin-top: 9px;
+  margin-left: 3px;
+  color: rgba(0, 0, 0, 0.32);
+
+}
+.searchPart #markericon {
+  position: absolute;
+  z-index: 5;
+  margin-top: 9px;
+  margin-left: 3px;
+  color: rgba(0, 0, 0, 0.32);
+  left: 0;
+}
+.locationTab{
+  width: 100%;
+  }
+  .companyTab{
+    width: 50%;
+	}
+#searchTab .tab-pane{
+ height: 61px;
+	  }
+.searchPanel{
+  width: 95% !important;
+  }
+ #firstTab, #secondTab {
+ padding-top: 2%;
+ }
+ #firstTab .primary{
+ width:100%;
+ }
+
+
+ #autofill-modal {
+  z-index: 5;
+ }
+
+#captcha_code {
+  width: 155px;
+}
+
+#newcompDetails {
+  padding-top: 5%;
+  }
+#newcompDetails #newcompanyForm{
+ width: 700px;
+
+ }
+ #pop_map {
+  width: 56%;
+  height: 98%;
+  position: absolute;
+  visibility: hidden;
+  z-index: 2500;
+  top: 0px;
+  margin-left: 23%;
+    padding-top: 5%;
+}
+
+
+  #LocationMap{
+    width: 100%;
+  height: 80%;
+    border: 3px solid #34a2ce;
+  }
+
+ /*div.gmnoprint > div:first-child {
+    width: 55px !important;
+  }*/
+.nearby {
+  width: 85%;
+    border: 1px solid #ccc;
+  left: 0;
+  height: 32px;
+  border-radius: 2px 0 0 2px;
+    padding: 6px 30px;
+}
+
+.tab-content > .tab-pane {
+  display: none;
+  background-color: rgba(255, 255, 255, 0.78);
+  padding: 2%;
+  width: 100%;
+}
+
+.industry_list{
+    height: 344px;
+   overflow: auto;
+  font-size: 13px;
+}
+
+.industry_list .radio{
+
+}
+.tagsBtn{
+background-color: whitesmoke;
+  margin: 2px;
+    cursor: text !important;
+}
+tbody {
+    display:block;
+    height:350px;
+    overflow:auto;
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+thead {
+  border-top: 2px solid #ddd;
+}
+table {
+    width:400px;
+}
+
+
+
+#myLocation{
+  position: absolute;
+  z-index: 5;
+  width: 28px;
+  height: 28px;
+  background-color: white;
+  bottom: 83px;
+  right: 10px;
+  cursor:pointer;
+  }
+  #myLocation img{
+  width: 23px;
+  margin: 2px;
+  }
+.primary {
+  color: white;
+  background: #56c0f1;
+  border: 1px solid #56c0f1;
+  line-height: 36px;
+  border-radius: 0 2px 2px 0;
+  margin-left: -1%;
+  padding: 5px 12px !important;
+}
+
+#placeSearch{
+  width: 93%;
+  padding-left: 7%;
+}
+
+#placeSearch:focus, #searchLoc:focus, #searchComp_text:focus{
+  border:2px solid #4d90fe !important;
+  }
+ #searchComp_text{
+ margin-bottom:2.3%;}
+  .primary:hover, .primary:focus{
+
+  }
+.left-inner-addon {
+    position: relative;
+}
+.left-inner-addon input {
+    padding-left: 30px;
+}
+.left-inner-addon i {
+    position: absolute;
+    padding: 10px 12px;
+    pointer-events: none;
+}
+
+#checkBox{
+display:none;
+text-align: center;
+}
+
+#header .btn-success:hover, .headerbutton a{
+color:rgb(115, 35, 220);
+}
+#header .btn-success, .headerbutton a{
+  color: black;
+}
+
+#header{
+  position: absolute;
+  width: 100%;
+  height: 5%;
+  background-color: white;
+  z-index: 5;
+}
+
+.bs-accordion{
+   position: absolute;
+  width: 17%;
+  height: 95%;
+  z-index: 5;
+  margin-top: 60px;
+  margin-left: 0%;
+  margin-bottom: 8px;
+  background-color: rgba(10, 0, 0, 0.36);
+  overflow: overlay;
+  padding-top: 1px;
+}
+.panel-group .panel + .panel {
+  margin-top: 0px !important;
+}
+.tabedcontent
+{
+
+}
+.nav-tabs > li > a {
+
+  }
+.nav-tabs {
+   border-bottom: 0px !important;
+}
+#leftContainer{
+  display: block;
+  margin-top: 31px;
+}
+#rightContainer{
+  display: block;
+  margin-top: -30%;
+  height: 58%;
+  overflow:scroll;
+  /*margin-left: 81%;*/
+}
+#rightContainer ul{
+  list-style-type: none;
+  padding-left: 0;
+  padding-top:25px;
+}
+#rightContainer .search{
+  position: fixed;
+}
+
+.search-query {
+        padding-right: 3px;
+        padding-right: 4px \9;
+        padding-left: 3px;
+        padding-left: 4px \9;
+
+
+        margin-bottom: 0;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+    }
+#newCompany {
+-webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+    }
+.icon-addon {
+    position: relative;
+    color: #555;
+    display: block;
+}
+
+.icon-addon .glyphicon {
+    position: absolute;
+    z-index: 2;
+    left: 10px;
+    font-size: 14px;
+    width: 20px;
+    margin-left: -2.5px;
+    text-align: center;
+    padding: 10px 0;
+    top: 1px
+}
+.icon-addon.addon-lg .form-control {
+      height: 39px;
+  font-size: 18px;
+  padding: 10px 16px 10px 40px;
+  width: 97%;
+
+}
+#formGroup{
+margin-bottom: 15px;
+  margin-left: -2px;
+
+}
+
+#newcompanyForm input, #newcompanyForm textarea, #newcompanyForm select, #pinLoc{
+margin-top: -2px;
+}
+
+#addressLineTwo{
+margin-top: 0px;
+}
+#pinLocation{
+font-size: xx-small;
+float:right;
+}
+
+.inputField{
+  margin-bottom: 3%;
+  }
+#newcompanyForm{
+  padding: 0;
+  border: 2px solid #34a2ce;
+    margin-top: -5%;
+  }
+
+.form_header{
+  background-color: #34a2ce;
+  color: white;
+  font-family: initial;
+  }
+  .close {
+  color: white !important;
+  opacity: 1.5 !important;
+  }
+
+  .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus{
+	background-color:#34a2ce !important;
+	  border-radius: 0px !important;
+  }
+#save_Btn{
+
+  margin-bottom: 11px;
+  }
+.error{
+  color: red;
+}
+.modal-body {
+  height: 40px ;
+  margin-top: 15px;
+    position: relative;
+  padding: 10px !important;
+  }
+  #address_div {
+
+  }
+
+  .addlinkIcon a{
+  text-decoration:none !important;
+
+  }
+  .addlinkIcon{
+  margin-top: 0%;
+  }
+
+ #pinLoc b{
+     opacity: 0.4;
+   }
+  #newLocatonForm{
+    height: 504px;
+  }
+
+  .ui-dialog {
+   width: 583px;
+  top: 35px !important;
+  z-index: 1055 !important;
+    left: 375px !important;
+
+  }
+.pac-container{z-index:3000 !important;
+}
+  .ui-widget-header{
+  background:#34a2ce !important;
+  }
+ #newLoc_Address{
+
+  }
+
+#exportTable{
+	display:none;
+    margin-top: 2%;
+    background-color: white;
+	padding: 1%;
+  }
+ #btnExport{
+ width:15%;
+
+ }
+ #tableData{
+ background-color: white;
+  margin-top: 1%;
+  }
+ .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td{
+   padding: 12px !important;
+  border-right: 2px solid #ddd ;
+ }
+ .spam_icon{
+   padding: 3px 9px !important;
+     line-height: 0.428571 !important;
+}
+.direction_icon{
+  padding: 2px 6px !important;
+  }
+ tr{
+   border-bottom: 2px solid #ddd;
+     border-top: 2px solid #ddd;
+	   border-left: 2px solid #ddd;
+}
+#map-div{
+width:225px;
+height:225px;
+}
+.mapClass{height: 335px;}
+#mapModal{
+  overflow: hidden;
+  margin-top: 2%;}
+.panel-info > .panel-heading {
+  color: white !important;
+  background-color: #34a2ce !important;
+  border-color: #34a2ce !important;
+  }
+  .panel-info {
+  border-color: #34a2ce !important;
+  border: 3px solid #34a2ce !important;
+  }
+ #Locationfinder{
+   position: absolute;
+  z-index: 5;
+  width: 38%;
+  margin-left: 27%;
+}
+
+  .buttons{
+  margin-top: 2%;
+  }
+.icons{
+  font-size: 20px !important;
+    color: black;
+  }
+ .icon{
+ cursor:pointer;
+ }
+ #export_icon{
+   width: 15px;
+   margin-top: -7%;
+   }
+.buttons li {
+  list-style-type: none;
+  display: inline;
+  padding-left: 4%;
+}
+.btn-group{
+    padding-right: 6%;
+  }
+ .headerbutton{
+     width: 80px;
+	padding: 0;
+   }
+ .contactLink{
+ font-size: 16px !important;
+   margin-top: 0.5px;
+ }
+.buttons li a:hover{
+	  border-bottom: 2px solid;
+}
+#leftContainer .panel-default {
+  border-color: rgba(205, 133, 63, 0.01) !important;
+    border-radius: 0px !important;
+  }
+
+  .panel-heading{
+  cursor:pointer;
+  }
+#leftContainer .panel-default > .panel-heading {
+  color: white;
+  background-color: #34a2ce !important;
+  }
+ .panel-title a{
+ text-decoration:none !important;
+ }
+#btn-group .btn-success, #btn-group .btn-success:hover, #btn-group .btn-success:focus, #btn-group .btn-success:active, #btn-group .btn-success.active, #btn-group .open .dropdown-toggle.btn-success{
+  background-color: rgba(43, 81, 43, 0) !important;
+  border-color: rgba(43, 81, 43, 0) !important;
+  font-size: 15px ;
+    display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+
+}
+
+#contactMail{
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  margin-top: 32px;
+  display:none;
+  }
+  .nav-pills > li + li {
+  margin-left: 0px !important;
+}
+  #emptyExport{
+    width: 25%;
+  height: 15%;
+  position: absolute;
+    background-color: rgba(255, 255, 255, 0.93);
+  z-index: 8;
+  margin-top: 33px;
+  display: none;
+  padding: 2%;
+  font-size: 13px;
+  color: red;
+  right: 0;
+  border: 2px solid #34a2ce;
+  }
+  .dropdown-menu{
+  /*margin-left: -160% !important;*/
+  color: black !important;
+  background-color: rgba(255, 255, 255, 0.71) !important;
+    width: 347px;
+
+  }
+.btn-group a{
+text-decoration:none !important;
+}
+
+.btn-success:hover{
+}
+
+.buttons li a{
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-family: initial;
+  text-transform: uppercase;}
+
+  #searchDistance span{
+   /* width: 52px; */
+	}
+	.kmradio{
+	  margin-left: -15px;
+  margin-top: 1%;
+    font-size: 11px;
+	}
+	.radioMile {
+	  margin-left: -2%;
+	    font-size: 11px;
+	}
+ /* .cb-enable, .cb-disable, .cb-enable span, .cb-disable span { background: url(switch.gif) repeat-x; display: block; float: left; }*/
+
+.cb-enable span, .cb-disable span { line-height: 30px; display: block; background-repeat: no-repeat; font-weight: bold; }
+.cb-enable span { background-position: left -90px; padding: 0 10px; background:white; }
+.cb-disable span { background-position: right -180px;padding: 0 10px; background:white;text-align: center; }
+.cb-disable.selected { background-position: 0 -30px; }
+.cb-disable.selected span { background-position: right -210px; color: #fff;   background:#56c0f1; }
+.cb-enable.selected { background-position: 0 -60px; }
+.cb-enable.selected span { background-position: left -150px; color: #fff;  background:#56c0f1;   text-align: center;}
+.switch label { cursor: pointer; }
+.switch input { display: none; }

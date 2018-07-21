@@ -1,0 +1,641 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8">
+	<link rel="stylesheet" href="media/css/style.css"/>
+	<link rel="stylesheet" href="media/css/bootstrap.css"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">	
+	<link rel="stylesheet" href="media/css/build.css"/>
+	<link href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/themes/blitzer/jquery-ui.css"rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="media/css/jquery.autocomplete.css" />
+
+	
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-udPA4xWP0ECSKHT8u-zKC5cKPfGdtyQ&libraries=places"></script>
+
+	<script type="text/javascript" src="media/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="media/js/script.js"></script>
+    <script type="text/javascript" src="media/js/infobox.js"></script>
+    <script type="text/javascript" src="media/js/bootstrap.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.11.4/jquery-ui.js" type="text/javascript"></script>
+	<script src="media/js/angular.js"></script>
+	<script src="media/js/app.js"></script>
+	
+ <!-- <script src="http://code.jquery.com/jquery-migrate-1.1.0.js"></script>
+  <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+  <script src="media/js/jquery.mobile-1.4.5.min.js"></script>-->
+	
+  </head>
+  <body>
+  
+<div class="container-fluid">
+<div class="row">
+	<!--###### Header --- #####-->
+
+<div id="header">
+
+	<div class="col-md-4 col-xs-4"  >
+		<div style="display:none;">
+				<input class="col-md-8 col-sm-8 col-xs-6 nearby input-large tt-input" id="company_search_top" placeholder="Please Enter Company Name" spellcheck="false" dir="auto" style="position: relative; vertical-align: top;">	
+				<button class="btn btn-search primary " id="search_btn_top">
+				<i class="glyphicon glyphicon-search"></i>
+			</button>
+		</div>
+	</div>
+				
+	<div class="searchPart col-md-4 col-xs-4" id="">
+		<span class="dropdown">
+
+			<!--
+		  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		    Select
+		    <span class="caret"></span>
+		  </button>
+		  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+		    <li><a id="link_integrated_add" href="#">Address</a></li>
+		    <li><a id="link_integrated_comp" href="#">Company</a></li>
+		  </ul>
+		-->
+		</span>
+		<input class="col-md-8 col-sm-8 col-xs-6 nearby input-large tt-input" id="location_search_top_comp" placeholder="Please Enter A Company" spellcheck="false" dir="auto" style="position: relative; vertical-align: top; display:none">
+			<input class="col-md-8 col-sm-8 col-xs-6 nearby input-large tt-input" id="location_search_top" placeholder="Please Enter An Address" spellcheck="false" dir="auto" style="position: relative; vertical-align: top;">	
+				<button class="btn btn-search primary " id="place_search_btn_top">
+				<i class="glyphicon glyphicon-search"></i>
+			</button>
+			<select class="form-control" id="integrated_search" name="verticals" style="display:inline;margin-left:-3px;width:115px;" >
+                
+                  <option value="Address" selected>Address</option>
+                  <option value="Company" >Company</option>
+                
+            </select>			
+	</div>
+				
+
+
+<div class="col-md-4  col-xs-4 btn-group pull-right" id="btn-group"> 
+
+ <!-- <a onclick=""  id="home_popover" type="button" data-toggle="" data-target="#contactMail" class="btn-success headerbutton contactLink"> -->
+ 	 <button onclick="showMapPage();" id="home_popover" type="button" data-toggle="" data-target="#home_address_modal" class="btn-success headerbutton ">
+
+ <i class="icons fa fa-home"></i>Home</button>
+<!-- </a>  -->
+
+ <button type="button" onclick="exportCompany()" class="btn-success headerbutton">
+ <img src="media/img/export-icon.png" id="export_icon"/>
+ Export
+ </button> 
+
+ <button type="button" class="btn-success headerbutton contactLink" style="width: 60px !important;">
+ <a href="aboutUs.html" target="_blank">About</a>
+ </button>
+ 
+ <button id="mailSendBtn" type="button" data-toggle="" data-target="#contactMail" class="btn-success headerbutton contactLink">
+             Contact <i class="fa fa-caret-down"></i></button>
+</div>
+	 
+
+	 <div class="col-md-offset-3 col-md-8 col-sm-offset-3 col-sm-8 col-xs-12" id="exportTable">
+	  <button id="btnExport" class="btn btn-default">Save As </button>
+         <table id="tableData" class="table" > 
+		<thead>
+      <tr>
+        <th style="width: 169px;">Select</th>
+        <th style="width: 170px;">Company Name</th>
+        <th style="width: 170px;">Distance</th>
+        <th style="width: 170px;">Address</th>
+        <th>No Of Employees</th>
+      </tr>
+    </thead>
+    <tbody id="exportInfo">
+	
+	</tbody>
+	</table>
+	
+      </div>
+</div>
+	
+<div id="empty_search_Res_popup">
+</div>
+<div id="emptyExport"></div>
+<div  id="home_address_modal" role="dialog" style="display:none;">
+    <div class="modal-dialog">
+      <div  class="modal-content col-md-offset-2 col-md-10">
+      	<div class="address_content">
+			<p>No address Found</p>
+		</div>
+       <center><button type="submit" class="btn primary">Edit</button></br>
+        </div>
+    </div>
+</div>
+
+    <div id="autofill-modal" class="modal-dialog" style="display: none;">
+        <div id="newcompanyForm" class="modal-content col-md-12">
+            <div class="form_header modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title">Choose your desired location</h4>
+            </div>
+            <div class="modal-body" style="  height: 410px;overflow: overlay;">
+                
+            </div>
+            
+        </div>
+    </div>
+	<!--######## mail function -############-->
+		<div ng-app="emailForm" id="contactMail" role="dialog">
+		<div class="modal-dialog">
+
+      <div id="newcompanyForm" class="modal-content col-md-offset-2 col-md-10">
+	   <div class="form_header modal-header">
+          <h4 class="modal-title">Send Mail</h4>
+        </div>
+       <form name="mail_form" id="mailForm" ng-controller="mail_controller" ng-submit="mail_form.$valid && sendEmail(sender_name,sender_email,sender_subject,sender_message)" class="" novalidate>
+		
+		<div class="modal-body">
+		<div class="col-md-5 col-sm-5 col-xs-12"> Your Name</div>
+		<div class="mailFormInput col-md-6 col-sm-6 col-xs-11">  
+		<input type="text" ng-model="sender_name" name="sender_name" placeholder="Name" class="form-control" required>
+		
+		</div>
+		<span class="col-md-1 col-sm-1 col-xs-1 error" ng-show="mail_form.sender_name.$error.required">*</span>
+        </div>
+		
+		<div class="modal-body">
+		<div class="col-md-5 col-sm-5 col-xs-12">Your Email</div>
+		<div class="mailFormInput col-md-6 col-sm-6 col-xs-11">
+		<input type="email" placeholder="Email" ng-model="sender_email" name="sender_email" class="form-control" required>
+		</div>
+		<span class="col-md-1 col-sm-1 col-xs-1 error" ng-show="mail_form.sender_email.$error.required">*</span>
+		<span class="col-md-1 col-sm-1 col-xs-1 error" ng-show="mail_form.sender_email.$error.email">Invalid email address.</span>
+
+        </div>
+		
+		<div class="modal-body">
+		<div class="col-md-5 col-sm-5 col-xs-12">Subject</div>
+		<div class="mailFormInput col-md-6 col-sm-6 col-xs-11">
+		<input type="text" placeholder="Subject" ng-model="sender_subject" name="sender_subject" class="form-control" required>
+		</div>
+		<span class="col-md-1 col-sm-1 col-xs-1 error" ng-show="mail_form.sender_subject.$error.required">*</span>
+        </div>
+		
+		<div class="modal-body">
+		<div class="col-md-5 col-sm-5 col-xs-12">Your Message</div>
+		<div class="mailFormInput col-md-6 col-sm-6 col-xs-11">
+		<textarea ng-model="sender_message" name="sender_message" placeholder="Message Here" class="form-control" required></textarea>
+		</div>
+		<span class="col-md-1 col-sm-1 col-xs-1 error" ng-show="mail_form.sender_message.$error.required">*</span>
+        </div>
+		<br><br>
+		<center><button type="submit" class="btn primary">Send </button></br>
+		</form> 
+		
+        </div>
+        </div>
+        </div>
+
+	
+	
+	
+	<!--- #####distamce company industry fund part----##### -->
+	<div id="leftContainer" class="bs-accordion">
+    <div class="panel-group" id="accordion">
+	
+		<div class="panel panel-default">
+            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" data-target="#collapsefour">
+                <h4 class="panel-title">
+                    <a>Funding:</a>
+                </h4>
+            </div>
+            <div id="collapsefour" class="panel-collapse collapse">
+                <div class="panel-body">
+					<div class="checkbox">
+						 <input type="checkbox" name="funding" id="radio17" class="check_all" value="all">
+                                <label for="radio17">
+                                      All
+                                </label>
+                            </div>	 				
+					<div class="checkbox">
+						 <input type="checkbox" name="funding" id="radio18" value="funded">
+                                <label for="radio18">
+                                      funded
+                                </label>
+                            </div>	  
+					<div class="checkbox">
+						 <input type="checkbox" name="funding" id="radio19" value="private">
+                                <label for="radio19">
+                                     private
+                                </label>
+                            </div>	  
+					<div class="checkbox">
+			 			<input type="checkbox" name="funding" id="radio20" value="public">
+	                	<label for="radio20">
+	                   	  public
+	                	</label>
+           		 	</div>	
+                </div>
+            </div>
+        </div>
+		
+        <div class="panel panel-default">
+            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
+                <h4 class="panel-title">
+                    <a>Company Size:</a>
+                </h4>
+            </div>
+            <div id="collapseTwo" class="panel-collapse collapse">
+                <div class="panel-body">
+					<div class="checkbox">
+                               <input type="checkbox" name="companySize" id="size_all" value="all" class="check_all"> 
+                                <label for="size_all">
+                                     All
+                                </label>
+                            </div>				
+					<div class="checkbox">
+                               <input type="checkbox" name="companySize" id="radio7" value="1-10" > 
+                                <label for="radio7">
+                                     1 - 10
+                                </label>
+                            </div>
+					<div class="checkbox">
+                                <input type="checkbox" name="companySize" id="radio8" value="11-50">
+                                <label for="radio8">
+                                      11 - 50
+                                </label>
+                            </div>
+					<div class="checkbox">
+                                <input type="checkbox" name="companySize" id="radio11" value="51-200">
+                                <label for="radio11">
+                                          51 - 200
+                                </label>
+                            </div>
+					<div class="checkbox">
+                               <input type="checkbox" name="companySize" id="radio12" value="201-500"> 
+                                <label for="radio12">
+                                       201 - 500
+                                </label>
+                            </div>
+					<div class="checkbox">
+                             <input type="checkbox" name="companySize" id="radio13" value="501-1,000">
+                                <label for="radio13">
+                                      501 - 1000
+                                </label>
+                            </div>
+					<div class="checkbox">
+                             <input type="checkbox" name="companySize" id="radio14" value="1,000+">
+                                <label for="radio14">
+                                     1000+
+                                </label>
+                            </div>	   
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"  data-toggle="collapse" data-parent="#accordion" data-target="#collapseThree">
+                <h4 class="panel-title">
+                    <a>Industry</a>
+                </h4>
+            </div>
+            <div id="collapseThree" class="panel-collapse collapse">
+                <div class="panel-body industry_list">
+				
+				<div class="checkbox">
+				<input type="checkbox" name="industry" id="industry_all" value="all" class="check_all" >
+				<label for="industry_all">All</label></div><div class="checkbox">
+				<input type="checkbox" name="industry" id="airlines" value="airlines" >
+				<label for="airlines">airlines</label></div><div class="checkbox">
+				<input type="checkbox" name="industry" id="lodging" value="lodging" >
+				<label for="lodging">lodging</label></div><div class="checkbox">
+				<input type="checkbox" name="industry" id="information-technology" value="information-technology" >
+				<label for="information-technology">information-technology</label></div><div class="checkbox">
+				<input type="checkbox" name="industry" id="health-care" value="health-care" >
+				<label for="health-care">health-care</label></div><div class="checkbox">
+				<input type="checkbox" name="industry" id="travel" value="travel" >
+				<label for="travel">travel</label></div><div class="checkbox">
+				<input type="checkbox" name="industry" id="mobile" value="mobile" >
+				<label for="mobile">mobile</label></div><div class="checkbox">
+				<input type="checkbox" name="industry" id="banking" value="banking" >
+				<label for="banking">banking</label></div><div class="checkbox">
+				
+				
+			</div>		
+                </div>
+            </div>
+        </div>
+		
+		<div class="panel panel-default" style="display:none;">
+            <div class="panel-heading"  data-toggle="collapse" data-parent="#accordion" data-target="#collapsefive">
+                <h4 class="panel-title">
+                    <a>Company</a>
+                </h4>
+            </div>
+
+            <div id="collapsefive" class="panel-collapse collapse" >
+                <div class="panel-body">
+				<input type="text" class="form-control" id="inputCompany" placeholder="Find" />
+				<div id="tagsList"></div>
+				<button type="button" id="tagSearch_btn" onclick="searchTags()" class="btn ">Search</button>
+				<button type="button" id="tagclear_btn" onclick="clearall_tags()" class="btn ">Clear</button>
+                </div>
+            </div>
+        </div>
+		<div class="panel panel-default" style="display:none;">
+            <div class="panel-heading"  data-toggle="collapse" data-parent="#accordion" data-target="#collapsesix">
+                <h4 class="panel-title">
+                    <a>Tags</a>
+                </h4>
+            </div>
+            <div id="collapsesix" class="panel-collapse collapse">
+                <div class="panel-body">
+				<input type="text" class="form-control" id="inputTags" placeholder="Find" />
+				<div id="tagsList" class="ui-widget1"></div>
+				<button type="button" id="tagSearch_btn" onclick="searchTags()" class="btn ">Search</button>
+				<button type="button" id="tagclear_btn" onclick="clearall_tags()" class="btn ">Clear</button>
+                </div>
+            </div>
+        </div>		
+    </div>
+	
+	
+	<button id="newCompany" type="button" class="btn primary col-md-offset-1 col-md-10 col-sm-12 col-xs-12" data-toggle="modal" data-target="#newcompDetails">Add New Company</button>
+           
+ <!--<div class="" style="margin-top: 15%">
+ 
+        <div class="col-md-12">
+		
+    		<div class="form-group" id="formGroup">
+                <div class="icon-addon addon-lg">
+                    <input type="text" placeholder="Name,Address,City,Street.." class="form-control" id="leftSearch">
+                    <label for="leftSearch" class="glyphicon glyphicon-search" rel="tooltip" title="leftSearch"></label>
+                </div>
+            </div>
+                      
+        </div>
+	</div>-->
+	
+	
+</div>
+
+	<!----####### Map section --######-->
+	<div id="searchDistance" class="col-md-3 col-sm-4 col-xs-7" > Search Radius   <br>
+	
+	<div class="col-md-offset-2 col-md-3 col-sm-offset-1 col-sm-5 col-xs-4 ">
+	<select class="form-control" id="distance">
+	<option value="2">2</option>
+	<option value="5">5</option>
+	<option value="10">10</option>
+	<option value="15">15</option>
+	<option value="25">25</option>
+	<option value="50">50</option>
+	</select>
+	</div>
+	
+	<p class="col-md-7 col-sm-6 col-xs-8 field switch">
+		<input type="radio" name="measure" id="radio_km" value="km" checked />
+		<input type="radio" name="measure" id="radio_miles" value="mile"/>
+		<label for="radio_km" class="kmradio cb-enable selected"><span>Km</span></label>
+		<label for="radio_miles" class="radioMile cb-disable"><span>Miles</span></label>
+	</p>
+	
+	</div>
+	
+	
+	
+    <div id="mapCanvas"></div>
+	
+	<div id="myLocation" onclick="find_ISP_location()" ><img src="media/img/location.jpg"></div>
+	
+	
+	 <div class="col-md-offset-3 col-md-6 col-sm-offset-1 col-sm-10 col-xs-offset-1 col-xs-10" id="searchContainer">
+		<div id="searchTabes">
+		<div id="searchTab">	
+			<ul  class="nav nav-pills tabs">
+				<li class="active locationTab"><a  href="#firstTab" data-toggle="tab">Location</a></li>
+				<li class="companyTab"><a href="#secondTab" data-toggle="tab">Company</a></li>
+			</ul>
+
+			<div class="tab-content clearfix">
+			<div class="tab-pane active" id="firstTab">
+				<div class="col-md-8 col-xs-8" id="searchBar">
+					<i class="glyphicon glyphicon-map-marker" id="markericon"></i>
+					<input class="form-control input-large tt-input" id="placeSearch" placeholder="Please Enter An Address" spellcheck="false" dir="auto" style="position: relative; vertical-align: top;">	
+				</div>
+				
+				<div id="" class="col-md-2 col-xs-2 checkbox checkbox-success" style="padding:0;  margin-top: 1%;">
+					<input id="loaction_chkbox" name="" value="" class="styled" type="checkbox">
+					<label for="loaction_chkbox" style="font-weight: bolder;">
+						Set as Home
+					</label>
+				</div>
+				<div class="col-md-2 col-xs-2">
+					<button class="btn btn-search primary search_btn" id="">
+					<i class="glyphicon glyphicon-search"></i>
+					</button>
+				</div>
+				
+	
+		<br>
+		
+			</div>
+			<div class="tab-pane" id="secondTab">
+				<div class="col-md-10 col-xs-10" style="  padding-right: 0;">
+					<input type="text" placeholder="Enter Your Company To Get Details" class="searchPanel form-control" id="searchComp_text"/>
+				</div>
+				<div class="col-md-2 col-xs-2">
+					<button class="btn btn-search primary search_btn" id="searchCompany">
+						<i class="glyphicon glyphicon-search"></i>
+					</button>
+				</div>
+			</div>
+         
+		</div>
+		</div><br><br>
+ 		 	
+		  </div>
+		  
+</div>
+</div>
+</div>
+
+
+	
+    <div class="modal fade" id="newcompDetails" role="dialog">
+    <div class="modal-dialog">
+    
+         <div id="newcompanyForm" class="modal-content col-md-12">
+       
+
+	   <div class="form_header modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">GIVE DETAILS OF NEW COMPANY</h4>
+        </div>
+		<div class="modal-body" style="  height: 410px;overflow: overlay;">
+		<form name="comapny_form" method="POST" action="{% url 'company-add' %}">
+			{% csrf_token %}
+		<div class="inputField col-md-12 col-sm-12 col-xs-12">
+		<div class="col-md-2 col-sm-3 col-xs-6">Name <span class="cNameError error">*</span></div>
+		<div class="col-md-4 col-sm-3 col-xs-6">  
+		<input type="text" name="name" id="companyName" placeholder="Company Name" class="form-control">
+		</div>
+        
+		<div class="col-md-2 col-sm-3 col-xs-6">Website</div>
+		<div class="col-md-4 col-sm-3 col-xs-6">
+		<input type="text" name="website" placeholder="Company Website" id="website" class="form-control">
+		</div>
+		
+		</div>
+		
+       <div class="inputField col-md-12 col-sm-12 col-xs-12">
+		<div class="col-md-2 col-sm-3 col-xs-6">Founded</div>
+		<div class="col-md-4 col-sm-3 col-xs-6">
+		<input type="text" name="founded" placeholder="Year" id="founded" class="form-control">
+		</div>
+       
+          <div class="col-md-2 col-sm-3 col-xs-6">Careers</div>
+		  <div class="col-md-4 col-sm-3 col-xs-6">
+		  <input type="text" name="careers" placeholder="Company Careers Page" id="careersPage" class="form-control">
+		  </div>
+		  
+		  </div>
+			
+		<div class="inputField col-md-12 col-sm-12 col-xs-12">
+		 <div class="col-md-2 col-sm-3 col-xs-6">Address</div>
+		 <div id="address_div" class="col-md-4 col-sm-3 col-xs-6">
+		 <input type="text" id="newLoc_Address" class="form-control" name="address">  
+		
+		
+		 <span class="AddressError error"> </span>
+		 </div>
+		
+		 <div id="address_div" class="col-md-4 col-sm-6 col-xs-6"> 
+		 <input type="text" id="addressLineTwo" class="form-control">
+		</div>
+		 <div id="pinLoc" class="col-md-2 col-sm-6 col-xs-6">
+		 <button id="btnShowMap" class="addressPoint btn btn-success" type="button">
+		 <span class="glyphicon glyphicon-map-marker"></span></button>
+		 </div>
+		<b id="pinLocation">Click and Drop pin </b>
+		<input type="hidden" name="lat" id="pin_lat" />
+		<input type="hidden" name="lng" id="pin_lng" />
+        </div>
+        
+		<div class="inputField col-md-12 col-sm-12 col-xs-12">
+		
+		 <div class="col-md-2 col-sm-6 col-xs-12">URLs</div>
+         <div class="col-md-8 col-sm-5 col-xs-11"> 
+		 <input type="text" id="addLink" placeholder="LinkedIn, Facebook, Twitter, StackOverflow, Crunchbase" class="form-control" name="urls">
+		</div>
+		
+		
+		
+		<div class="col-md-1 col-sm-1 col-xs-1 addlinkIcon"> 
+		<a href="#" onclick="addLinks()"> + </a></div>
+		<div class="col-md-3 col-sm-6"> </div>
+		 <div class="col-md-9 col-sm-6 col-xs-12" id="share_links">
+		</div>
+		
+		</div>
+		
+		<div class=" col-md-12 col-sm-12 col-xs-12">
+		<div class="col-md-2 col-sm-3 col-xs-6">Industry</div>
+		  <div class="col-md-4 col-sm-3 col-xs-6">
+		  <select id="industryType" class="form-control" name="industry">
+          {% include 'industries.html' %}
+		  </select>
+        </div>
+		   
+		 <div class="col-md-2 col-sm-3 col-xs-6">Tags</div>
+		  <div class="col-md-4 col-sm-3 col-xs-6">
+		  <input type="text" placeholder="Find" id="select_tags" class="form-control">
+		  </div>
+		  
+		  </div>
+		  
+		  <div class=" inputField col-md-12 col-sm-12 col-xs-12">
+			<div class="col-md-6 col-sm-6 col-xs-6"></div>
+			<div class="col-md-6 col-sm-6 col-xs-6" id="newTagList"></div>
+		</div>
+		 
+		<div class="inputField col-md-12 col-sm-12 col-xs-12">
+		
+		<!--<div class="col-md-2 col-sm-3 col-xs-6">Size</div>
+		  <div class="col-md-4 col-sm-3 col-xs-6">
+		  <input type="text" placeholder="Company Size" id="company_size" class="form-control"></div>
+		  -->
+		 <div class="col-md-2 col-sm-3 col-xs-6">Email</div> 
+		  <div class="col-md-10 col-sm-9 col-xs-6">
+		  <input type="text" name="email" id="e_mail" placeholder="Enter your email ID" class="form-control">
+		  </div>
+		  </div>
+
+			<div class="inputField col-md-12 col-sm-12 col-xs-12">
+			<!-- <div class="col-md-2 col-sm-3 col-xs-6">Captcha <span class="CapchaError error"> </span> </div> 
+			 
+			 <div class="col-md-4 col-sm-3 col-xs-6">
+			<input type="text" name="captcha" id="captcha" placeholder="Enter Captcha" class="form-control demoInputBox">
+			<br/>
+			</div> 
+			
+			<div class="col-md-4 col-sm-3 col-xs-6">
+			<img id="captcha_code" src="http://mymapworks.com/company/captcha_code.php" />
+			<img src="media/img/reload.png" onClick="refreshCaptcha();" style="cursor: pointer;  width: 25px;">
+			</div>-->
+			<div class="col-md-10 offset"></div>
+			 <div id="save_Btn" class="col-md-2 col-sm-3 col-xs-6">
+				<input class="btn primary" type="submit" value="Submit" ></div>
+			
+			</div>
+			</form>
+			 </div>
+      
+		<!--<div class="col-md-6 col-sm-6 col-xs-12">Funding</div>
+		  <div class="col-md-6 col-sm-6 col-xs-12">
+		  <input type="text" placeholder="Company Size" id="company_size" class="form-control"></div>-->
+      
+          </div>
+		
+      </div>
+      
+    </div>
+  </div>
+
+  
+  <!-- ######## ADD NEW Location on map --#########-->
+	
+   <!-- <div id="dialog" style="display: none">
+
+	<input type="text" placeholder="Search Location" class="form-control" id="locationFinder"/>
+	
+        <div id="LocationMap" style="height: 287px; width: 563px;">
+        </div>
+    </div>-->
+	
+	<div id="pop_map"class="pop_map">
+	
+	<div class="form_header modal-header" style="  width: 100%;">
+          <button type="button" class="close" onclick="closepopupMap()">&times;</button>
+          <h4 class="modal-title">Select Location</h4>
+        </div>
+		<input type="text" placeholder="Search Location" class="form-control" id="locationFinder"/>
+		<div id="LocationMap"></div>
+	</div>
+	<div id="rightContainer" class="bs-accordion">
+        <div class="panel-group" >
+	
+		<div class="panel panel-default">
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+</div>	
+  </body>
+</html>
