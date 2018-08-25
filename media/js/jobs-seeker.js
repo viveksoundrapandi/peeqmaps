@@ -82,7 +82,7 @@ job_object.job_seeker = function () {
         }
         job_url = url.searchParams.get("job_url");
 
-        job_url = "https://www.naukri.com/fidelity/xyz"
+        // job_url = "https://www.naukri.com/fidelity/xyz"
     }
 
     function throw_error(error_message) {
