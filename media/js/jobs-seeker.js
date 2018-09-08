@@ -2,7 +2,6 @@ var job_object = job_object || {};
 window.job_object = job_object;
 job_object.network = function () {
     function post(url, data, success, failure) {
-        // success();
 
         $.ajax({
             url: url,
@@ -13,7 +12,7 @@ job_object.network = function () {
                 success(response);
             },
             error: function (error) {
-                failure(error);
+                failure && failure(error);
             },
             data: JSON.stringify(data)
         });
