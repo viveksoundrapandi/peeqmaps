@@ -72,7 +72,7 @@ job_object.map_controller = function (job_details) {
 
 job_object.job_seeker = function () {
     let job_url;
-    const BASE_API_URL = "http://www.peeqentity.online/peeq-service/rest/o/jobinfo/srch";
+    const BASE_API_URL = "https://api.peeqentity.com/peeq-service/rest/o/jobinfo/srch";
     function validate_job_params() {
         let url = new URL(window.location.href);
         if (!url.searchParams.get("job_url")) {
